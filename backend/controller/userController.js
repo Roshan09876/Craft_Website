@@ -15,7 +15,7 @@ const register = async (req, res) => {
             imageUrl = image;
         } else if (req.files && req.files.image) {
             const uploadedImage = await cloudinary.uploader.upload(req.files.image.path, {
-                folder: "course",
+                folder: "user",
                 crop: "scale"
             });
             imageUrl = uploadedImage.secure_url;

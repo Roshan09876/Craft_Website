@@ -21,6 +21,7 @@ cloudinary.config({
 app.use(acceptMultimedia());
 
 app.use('/api/user', require("./routes/userRoutes"))
+app.use('/api/product', require("./routes/productroutes"))
 
 app.get('/', (req, res) => {
     res.send("Hello from the server")
