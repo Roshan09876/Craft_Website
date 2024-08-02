@@ -92,9 +92,11 @@ const Navbar = () => {
                  Register
               </button>
               </Link>
+              <Link to='/login'>
               <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
                  Login
               </button>
+              </Link>
             </div>
           </div>
           <i
