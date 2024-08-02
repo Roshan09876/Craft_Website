@@ -6,12 +6,14 @@ import Clients from "./pages/Clients";
 import Products from "./pages/Products";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <div className="App">
     <BrowserRouter>
       <Navbar/>
+      <Toaster position="top-center" reverseOrder={false}/>
     <Routes>
       <Route path="/" element={<Homepage/>} />
       <Route path="/register" element={<Register/>} />
