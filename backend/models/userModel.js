@@ -16,13 +16,17 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    cartItems: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product"
-    }],
+    // cartItems: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Product"
+    // }],
     image: {
         type: String,
         required: false
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 }, { timestampe: true })
 
