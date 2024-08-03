@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const Api = axios.create({
-    baseURL: "http://localhost:5500",
+    baseURL: "http://localhost:5500/api",
     withCredentials: true,
     headers: {
         "Content-Type": "multipart/form-data"
@@ -16,3 +16,5 @@ const config = {
 };
 
 export const testApi = () => Api.get("/", config);
+
+export const registerApi = (userData) => Api.post("/user/register", userData);

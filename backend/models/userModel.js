@@ -16,10 +16,6 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    // cartItems: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Product"
-    // }],
     image: {
         type: String,
         required: false
@@ -28,7 +24,12 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false
     }
-}, { timestampe: true })
+}, { timestamps: true })
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
+
+   // cartItems: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Product"
+    // }],

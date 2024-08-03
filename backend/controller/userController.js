@@ -5,15 +5,21 @@ const bcrypt = require("bcrypt")
 
 const register = async (req, res) => {
     const { firstName, lastName, email, password, image } = req.body;
-    console.log(req.body)
-    if (!firstName || !lastName || !email || !password) {
-        return res.status(400).send('Please enter all fields')
-    }
-    try {
+    console.log(req.body);
 
-        if (typeof image === 'string' && image.startsWith('http')) {
-            imageUrl = image;
+    // Validate required fields
+    if (!firstName || !lastName || !email || !password) {
+        return res.status(400).send('Please enter all required fields');
+    }
+
+    try {
+        let imageUrl = '';
+
+        // Handle image processing if provided
+        if (image && typeof image === 'string' && image.startsWith('http')) {
+            imageUrl = image; // Use provided image URL
         } else if (req.files && req.files.image) {
+            // Handle image upload if a file is provided
             const uploadedImage = await cloudinary.uploader.upload(req.files.image.path, {
                 folder: "user",
                 crop: "scale"
@@ -21,32 +27,82 @@ const register = async (req, res) => {
             imageUrl = uploadedImage.secure_url;
         }
 
-
-        const userExist = await User.findOne({ email: email })
+        // Check if user already exists
+        const userExist = await User.findOne({ email: email });
         if (userExist) {
-            return res.status(400).send("User Already Exists")
+            return res.status(400).send("User Already Exists");
         }
+
+        // Hash the password
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt)
-        const userData = await User({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create and save new user
+        const userData = new User({
+            firstName,
+            lastName,
+            email,
             password: hashedPassword,
-            image: imageUrl || ''
-        })
+            image: imageUrl // Optional field
+        });
         await userData.save();
+
         return res.status(200).json({
             success: true,
             userData,
             message: "Registered Successfully"
-        })
+        });
 
     } catch (error) {
-        console.log(`Error while Registering ${error}`)
-        res.status(400).send("Internal Server Error")
+        console.error(`Error while Registering: ${error}`);
+        res.status(500).send("Internal Server Error"); // Change to 500 for server errors
     }
-}
+};
+
+// const register = async (req, res) => {
+//     const { firstName, lastName, email, password, image } = req.body;
+//     console.log(req.body)
+//     if (!firstName || !lastName || !email || !password) {
+//         return res.status(400).send('Please enter all fields')
+//     }
+//     try {
+
+//         if (typeof image === 'string' && image.startsWith('http')) {
+//             imageUrl = image;
+//         } else if (req.files && req.files.image) {
+//             const uploadedImage = await cloudinary.uploader.upload(req.files.image.path, {
+//                 folder: "user",
+//                 crop: "scale"
+//             });
+//             imageUrl = uploadedImage.secure_url;
+//         }
+
+
+//         const userExist = await User.findOne({ email: email })
+//         if (userExist) {
+//             return res.status(400).send("User Already Exists")
+//         }
+//         const salt = await bcrypt.genSalt(10);
+//         const hashedPassword = await bcrypt.hash(password, salt)
+//         const userData = await User({
+//             firstName: firstName,
+//             lastName: lastName,
+//             email: email,
+//             password: hashedPassword,
+//             image: imageUrl || ''
+//         })
+//         await userData.save();
+//         return res.status(200).json({
+//             success: true,
+//             userData,
+//             message: "Registered Successfully"
+//         })
+
+//     } catch (error) {
+//         console.log(`Error while Registering ${error}`)
+//         res.status(400).send("Internal Server Error")
+//     }
+// }
 
 const login = async (req, res) => {
     const { email, password } = req.body;
