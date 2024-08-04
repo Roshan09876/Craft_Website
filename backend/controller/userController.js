@@ -109,7 +109,25 @@ const login = async (req, res) => {
     }
 }
 
+const getProfile = async(req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+        if(!user){
+            return res.status(400).send("User Not Found")
+        }
+        return res.status(200).json({
+            success: true,
+            user,
+            message: "Profile Fetched Successfully"
+        })
+    } catch (error) {
+        console.log(`Error in Get Profile ${error}`)
+        return res.status(500).send("Internal Server Error")
+    }
+}
+
 module.exports = {
     register,
-    login
+    login,
+    getProfile
 }
