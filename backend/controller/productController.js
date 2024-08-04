@@ -8,6 +8,8 @@ const createProduct = async (req, res) => {
         return res.status(400).send('Please enter all fields')
     }
     try {
+        let imageUrl = '';
+
         if (typeof image === "string" && image.startsWith("http")) {
             imageUrl = image;
         } else if (req.files && req.files.image) {
@@ -24,7 +26,7 @@ const createProduct = async (req, res) => {
         const newProduct = new Product({
             title: title,
             description: description,
-            image: imageUrl || ''
+            image: imageUrl 
         })
         await newProduct.save();
         res.json({

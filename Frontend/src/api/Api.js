@@ -18,3 +18,5 @@ const config = {
 export const testApi = () => Api.get("/", config);
 
 export const registerApi = (userData) => Api.post("/user/register", userData);
+
+export const loginApi = (userData) => Api.post("user/login", userData);
