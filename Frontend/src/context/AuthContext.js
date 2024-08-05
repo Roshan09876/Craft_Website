@@ -8,7 +8,6 @@ const AuthProvider = ({ children }) => {
     //State to hold userData
     // const [user, setUser] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem("userData")) || null);
-    // const { id } = useParams();
 
     const register = async (userData) => {
         try {

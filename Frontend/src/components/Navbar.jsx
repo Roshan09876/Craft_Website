@@ -63,12 +63,18 @@ const Navbar = () => {
             >
               Products
             </Link>
-            <Link
-              to="/profile"
-              className="font-bold hover:cursor-pointer text-primary mr-5"
-            >
-              Profile
-            </Link>
+            {
+              user != null ? (
+                <Link
+                  to="/profile"
+                  className="font-bold hover:cursor-pointer text-primary mr-5"
+                >
+                  Profile
+                </Link>
+              ) : (
+                <></>
+              )
+            }
             <Link
               to="/about"
               className="font-bold hover:cursor-pointer text-primary mr-5"
@@ -102,8 +108,8 @@ const Navbar = () => {
                 <div className="flex items-center">
                   <h1 className="font-medium text-2xl mr-2">Welcome!! {user.firstName}</h1>
                   <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 text-white bg-red-600 transform transition-transform duration-300 hover:scale-110"
-                  onClick={logout}
-                   >
+                    onClick={logout}
+                  >
                     Log Out
                   </button>
                 </div>

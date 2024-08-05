@@ -26,7 +26,7 @@ const createProduct = async (req, res) => {
         const newProduct = new Product({
             title: title,
             description: description,
-            image: imageUrl 
+            image: imageUrl
         })
         await newProduct.save();
         res.json({
@@ -42,6 +42,23 @@ const createProduct = async (req, res) => {
 
 }
 
+const getallProduct = async (req, res) => {
+    try {
+        const allProducts = await Product.find();
+        if (!allProducts) {
+            return res.status(400).send("No Product Found")
+        }
+        return res.status(200).json({
+            success: true,
+            allProducts,
+            message: "All Products Fetch successfully"
+        })
+    } catch (error) {
+        console.log(`Error while Fetching all Product is ${error}`)
+        res.status(400).send("Internal Server Error")
+    }
+}
+
 module.exports = {
-    createProduct
+    createProduct, getallProduct
 }
