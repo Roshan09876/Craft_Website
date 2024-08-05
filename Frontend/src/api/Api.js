@@ -9,14 +9,17 @@ const Api = axios.create({
 });
 
 // Configuration for axios
-const config = {
+const getAuthHeaders = () => ({
     headers: {
-        'authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
-};
+});
 
-export const testApi = () => Api.get("/", config);
+export const testApi = () => Api.get("/");
 
 export const registerApi = (userData) => Api.post("/user/register", userData);
 
 export const loginApi = (userData) => Api.post("user/login", userData);
+
+export const getProfileApi = (id) => Api.get(`user/profile/${id}`, getAuthHeaders());
+

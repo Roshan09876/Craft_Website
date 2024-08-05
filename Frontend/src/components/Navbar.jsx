@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import EmailIcon from "@mui/icons-material/Email";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
@@ -6,18 +6,16 @@ import logo from "../assets/logo.png";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 
 const Navbar = () => {
   const [menuOpen, setMenuopen] = useState(false);
-  const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+
 
   const toggleButton = () => {
     setMenuopen(!menuOpen);
-  };
-
-  const handelNavigate = () => {
-    navigate("/clients");
   };
 
   return (
@@ -66,7 +64,7 @@ const Navbar = () => {
               Products
             </Link>
             <Link
-              to="/testimonials"
+              to="/profile"
               className="font-bold hover:cursor-pointer text-primary mr-5"
             >
               Profile
@@ -78,31 +76,43 @@ const Navbar = () => {
               About Us
             </Link>
             <Link
-              to="/teams"
+              to="/cart"
               className="font-bold hover:cursor-pointer text-primary mr-5"
             >
               Cart
             </Link>
           </div>
           <div className="px-5">
-            <div className=" hidden md:block h-1/2  px-5 py-2 gap-2 text-white">
-              <SupervisedUserCircleIcon />
-              <Link to='/register'>
-              <button className="lg:w-32 md:w-13 mr-5 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
-                 Register
-              </button>
-              </Link>
-              <Link to='/login'>
-              <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
-                 Login
-              </button>
-              </Link>
-            </div>
+            {
+              user == null ? (
+                <div className=" hidden md:block h-1/2  px-5 py-2 gap-2 text-white">
+                  <SupervisedUserCircleIcon />
+                  <Link to='/register'>
+                    <button className="lg:w-32 md:w-13 mr-5 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
+                      Register
+                    </button>
+                  </Link>
+                  <Link to='/login'>
+                    <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
+                      Login
+                    </button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <h1 className="font-medium text-2xl mr-2">Welcome!! {user.firstName}</h1>
+                  <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 text-white bg-red-600 transform transition-transform duration-300 hover:scale-110"
+                  onClick={logout}
+                   >
+                    Log Out
+                  </button>
+                </div>
+              )
+            }
           </div>
           <i
-            className={`fa ${
-              menuOpen ? "fa-times" : "fa-bars"
-            } text-2xl sm:hidden cursor-pointer`}
+            className={`fa ${menuOpen ? "fa-times" : "fa-bars"
+              } text-2xl sm:hidden cursor-pointer`}
             onClick={toggleButton}
             aria-hidden="true"
           ></i>
@@ -118,12 +128,12 @@ const Navbar = () => {
             </Link>
             <Link to="/products" className="block font-semibold">
               <li className="py-2  px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
-                Product & Service
+                Product
               </li>
             </Link>
-            <Link to="/testimonials" className="block font-semibold">
+            <Link to="/profile" className="block font-semibold">
               <li className="py-2 px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
-                Testimonials
+                Profile
               </li>
             </Link>
             <Link to="/about" className="block font-semibold">
@@ -131,26 +141,12 @@ const Navbar = () => {
                 About us
               </li>
             </Link>
-            <Link to="/teams" className="block font-semibold">
+            <Link to="/cart" className="block font-semibold">
               <li className="py-2 px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
-                Our Teams
-              </li>
-            </Link>
-            <Link to="/careers" className="block font-semibold">
-              <li className="py-2 px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
-                Careers
+                Cart
               </li>
             </Link>
           </ul>
-          <div className="px-5 ml-3 mt-2">
-            <button
-              className="bg-primary w-32 text-white font-semibold px-4 py-1 rounded-full"
-              onClick={handelNavigate}
-            >
-              <SupervisedUserCircleIcon className="mr-2" />
-              Clients
-            </button>
-          </div>
         </div>
       )}
     </div>

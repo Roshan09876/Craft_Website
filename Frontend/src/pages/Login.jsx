@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react'
 import RegisterAnimation from '../animation_component/RegisterAnimation'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 
 
 const Login = () => {
-
+  const navigate = useNavigate()
   const { login } = useContext(AuthContext)
   const [formData, setFormData] = useState({
     email: "",
@@ -20,7 +20,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(formData)
+      await login(formData);
+      navigate("/")
     } catch (error) {
       console.log(`Error from Login Page ${error}`)
     }

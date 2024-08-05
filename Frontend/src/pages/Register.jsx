@@ -6,6 +6,7 @@ import AuthContext from '../context/AuthContext';
 
 const Register = () => {
   const { register } = useContext(AuthContext);
+  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
