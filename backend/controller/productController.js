@@ -1,5 +1,5 @@
 const Product = require("../models/productModel")
-const cloudinary = require("cloudinary")
+const cloudinary = require("cloudinary").v2;
 
 const createProduct = async (req, res) => {
     const { title, description, image } = req.body;
@@ -59,6 +59,71 @@ const getallProduct = async (req, res) => {
     }
 }
 
+const deleteProductById = async (req, res) => {
+    try {
+        const deleteProduct = await Product.findByIdAndDelete(req.params.id)
+        if (!deleteProduct) {
+            return res.status(400).send("Deleted Product Not Found")
+        }
+        return res.status(200).json({
+            success: true,
+            deleteProduct,
+            message: "Product Deleted Successfuly"
+        })
+
+    } catch (error) {
+        console.log(`Error while deleting product is ${error}`)
+        return res.status(500).send("Internal Server Error")
+    }
+}
+
+const updateProduct = async (req, res) => {
+    const { title, description } = req.body;
+    const { image } = req.path;
+
+    try {
+        let updatedData = {
+            title: title,
+            description: description,
+        };
+
+        if (image) {
+            const uploadedImage = await cloudinary.v2.uploader.upload(
+                image.path,
+                {
+                    folder: "foharmalai/products",
+                    crop: "scale"
+                }
+            );
+            updatedData.image = uploadedImage.secure_url;
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+
+        if (!updatedProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            updatedData: updatedProduct,
+            message: "Product updated successfully"
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+};
+
+
 module.exports = {
-    createProduct, getallProduct
+    createProduct, getallProduct, deleteProductById, updateProduct
 }

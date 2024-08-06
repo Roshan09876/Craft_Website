@@ -43,7 +43,7 @@ const register = async (req, res) => {
             lastName,
             email,
             password: hashedPassword,
-            image: imageUrl 
+            image: imageUrl
         });
         await userData.save();
 
@@ -88,12 +88,12 @@ const login = async (req, res) => {
             isAdmin: userData.isAdmin
         }
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "6hr" })
-            return res.status(200).json({
-                success: true,
-                token: token,
-                userData,
-                message: "Login Successfully"
-            });
+        return res.status(200).json({
+            success: true,
+            token: token,
+            userData,
+            message: "Login Successfully"
+        });
         // if (!userData.cartItems || userData.cartItems.length === 0) {
         //     return res.status(200).json({
         //         success: false,
@@ -109,10 +109,10 @@ const login = async (req, res) => {
     }
 }
 
-const getProfile = async(req, res) => {
+const getProfile = async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
-        if(!user){
+        if (!user) {
             return res.status(400).send("User Not Found")
         }
         return res.status(200).json({
@@ -125,6 +125,8 @@ const getProfile = async(req, res) => {
         return res.status(500).send("Internal Server Error")
     }
 }
+
+
 
 module.exports = {
     register,
