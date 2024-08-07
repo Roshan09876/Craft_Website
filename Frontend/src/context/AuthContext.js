@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import { getProfileApi, loginApi, registerApi } from "../api/Api";
 import toast from "react-hot-toast";
 
@@ -38,25 +38,25 @@ const AuthProvider = ({ children }) => {
         }
     };
 
-    const getProfile = async () => {
+    const getProfile = useCallback(async () => {
         try {
-            const token = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
-            const id = token.id;
-
-            if (!id) {
-                throw new Error("User ID not found in token");
-            }
-
-            const response = await getProfileApi(id);
-            if (response.status === 200) {
-                console.log("User data fetched: ", response.data.user);
-                setUser(response.data.user);
-            }
+          const token = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
+          const id = token.id;
+    
+          if (!id) {
+            throw new Error("User ID not found in token");
+          }
+    
+          const response = await getProfileApi(id);
+          if (response.status === 200) {
+            console.log("User data fetched: ", response.data.user);
+            setUser(response.data.user);
+          }
         } catch (error) {
-            toast.error(error.response?.data.message || "An Error Occurred");
-            throw error;
+          toast.error(error.response?.data.message || "An Error Occurred");
+          throw error;
         }
-    };
+      }, []); 
 
     const logout = async () => {
         localStorage.clear();
