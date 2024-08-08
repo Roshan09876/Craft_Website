@@ -10,6 +10,7 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import Profile from "./pages/Profile";
 import { ProductProvider } from "./context/ProductContext";
+import Footer from "./components/Footer";
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
               <Route path="/clients" element={<Clients />} />
               <Route path="/products" element={<Products />} />
             </Routes>
+            <Footer/>
           </BrowserRouter>
         </ProductProvider>
       </AuthProvider>

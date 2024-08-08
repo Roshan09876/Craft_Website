@@ -14,12 +14,12 @@ const Products = () => {
       }
     }
     fetchProduct();
-  });
+  }, [getallProduct]);
 
   return (
     <div className='px-10 py-10'>
       <h1 className='font-extrabold text-3xl'>Products We Sell are....</h1>
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-5'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-5'>
         {
           product.map((item) => (
             <div key={item._id} className='border p-4 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 hover:bg-gradient-to-r from-[#e0f7f8] via-white to-[#e0f7f8]'>

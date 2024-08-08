@@ -1,9 +1,7 @@
-// pages/Homepage.js
 import React from "react";
 import Hero from "../components/Hero";
 import Service from "../components/Service";
 import TechWeLove from "../components/TechWeLove";
-import Footer from "../components/Footer";
 import TrustedBy from "../components/TrustedBy";
 // import { testApi } from "../api/Api";
 
@@ -24,7 +22,6 @@ const Homepage = () => {
       <TrustedBy />
       <Service />
       <TechWeLove />
-      <Footer/>
     </div>
   );
 };
