@@ -59,6 +59,23 @@ const getallProduct = async (req, res) => {
     }
 }
 
+const getProductById = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id)
+        if(!product){
+            return res.status(400).send("Product Not Found")
+        }
+        return res.status(200).json({
+            success: true,
+            product,
+            message: "Single Product Fetch Successfully"
+        })
+    } catch (error) {
+        console.log(`Error while Fetching  Product is ${error}`)
+        res.status(400).send("Internal Server Error")
+    }
+}
+
 const deleteProductById = async (req, res) => {
     try {
         const deleteProduct = await Product.findByIdAndDelete(req.params.id)
@@ -125,5 +142,5 @@ const updateProduct = async (req, res) => {
 
 
 module.exports = {
-    createProduct, getallProduct, deleteProductById, updateProduct
+    createProduct, getallProduct, deleteProductById, updateProduct, getProductById
 }

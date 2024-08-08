@@ -26,11 +26,18 @@ const Products = () => {
               <img src={item.image} alt={item.title} className='w-full h-48 object-cover mb-4 rounded-lg' />
               <h1 className='font-bold text-xl mb-2'>{item.title}</h1>
               {/* <h2 className='text-gray-700'>{item.description}</h2> */}
-              <Link to='/'>
-                <button className="lg:w-32 text-white mt-2 md:w-13 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
-                  Add to Cart
-                </button>
-              </Link>
+              <div className='flex flex-row justify-between'>
+                <Link to={`/details/${item._id}`}>
+                  <h1 className="lg:w-32 text-black mt-2 md:w-13 px-3 py-2 transform transition-transform duration-300 hover:scale-110" >
+                    View Details
+                  </h1>
+                </Link>
+                <Link to='/'>
+                  <button className="lg:w-32 text-white mt-2 md:w-13 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
+                    Add to Cart
+                  </button>
+                </Link>
+              </div>
             </div>
           ))
         }

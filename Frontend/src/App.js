@@ -11,6 +11,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Profile from "./pages/Profile";
 import { ProductProvider } from "./context/ProductContext";
 import Footer from "./components/Footer";
+import Details from "./pages/Details";
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
               <Route path="/about" element={<Aboutus />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/details/:detailId" element={<Details />} />
             </Routes>
             <Footer/>
           </BrowserRouter>
