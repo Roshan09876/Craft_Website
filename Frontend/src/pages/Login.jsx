@@ -3,7 +3,6 @@ import RegisterAnimation from '../animation_component/RegisterAnimation'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 
-
 const Login = () => {
   const navigate = useNavigate()
   const { login } = useContext(AuthContext)
@@ -20,8 +19,12 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(formData);
-      navigate("/")
+      const loggedInUser = await login(formData);
+      if (loggedInUser && loggedInUser.isAdmin) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.log(`Error from Login Page ${error}`)
     }

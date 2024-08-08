@@ -1,13 +1,19 @@
-import { createContext, useCallback, useState } from "react";
-import { getProfileApi, loginApi, registerApi } from "../api/Api";
+import { createContext, useCallback, useState, useEffect } from "react";
+import { getallusersAPI, getProfileApi, loginApi, registerApi } from "../api/Api";
 import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    //State to hold userData
-    // const [user, setUser] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem("userData")) || null);
+    const [allusers, setAllUsers] = useState([])
+
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem("userData"));
+        if (storedUser) {
+            setUser(storedUser);
+        }
+    }, []);
 
     const register = async (userData) => {
         try {
@@ -17,7 +23,7 @@ const AuthProvider = ({ children }) => {
                 toast.success(response.data.message);
             }
         } catch (error) {
-            toast.error(error.response?.data || "An Error Occured");
+            toast.error(error.response?.data || "An Error Occurred");
             throw error;
         }
     };
@@ -26,45 +32,59 @@ const AuthProvider = ({ children }) => {
         try {
             const response = await loginApi(userData);
             if (response.status === 200 || response.status === 201) {
-                setUser(response.data.userData);
+                const user = response.data.userData;
+                setUser(user);
                 toast.success(response.data.message);
-                console.log(response.data)
-                await localStorage.setItem("userData", JSON.stringify(response.data.userData));
-                await localStorage.setItem("token", response.data.token);
+                localStorage.setItem("userData", JSON.stringify(user));
+                localStorage.setItem("token", response.data.token);
+                return user;
             }
         } catch (error) {
-            toast.error(error.response?.data.message || "An Error Occured");
+            toast.error(error.response?.data.message || "An Error Occurred");
             throw error;
         }
     };
 
     const getProfile = useCallback(async () => {
         try {
-          const token = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
-          const id = token.id;
-    
-          if (!id) {
-            throw new Error("User ID not found in token");
-          }
-    
-          const response = await getProfileApi(id);
-          if (response.status === 200) {
-            console.log("User data fetched: ", response.data.user);
-            setUser(response.data.user);
-          }
-        } catch (error) {
-          toast.error(error.response?.data.message || "An Error Occurred");
-          throw error;
-        }
-      }, []); 
+            const token = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
+            const id = token.id;
 
-    const logout = async () => {
+            if (!id) {
+                throw new Error("User ID not found in token");
+            }
+
+            const response = await getProfileApi(id);
+            if (response.status === 200) {
+                setUser(response.data.user);
+            }
+        } catch (error) {
+            toast.error(error.response?.data.message || "An Error Occurred");
+            throw error;
+        }
+    }, []);
+
+    const logout = () => {
         localStorage.clear();
+        setUser(null);
         window.location.reload();
-    }
+    };
+
+    const getallUsers = useCallback(async () => {
+        try {
+            const response = await getallusersAPI()
+            if (response.status === 200 || response.status === 201) {
+                console.log('All Users Fetched:', response.data.users)
+                setAllUsers(response.data.users);
+            }
+        } catch (error) {
+            console.log(`Error while fetching all users ${error}`)
+            throw error;
+        }
+    }, [])
 
     return (
-        <AuthContext.Provider value={{ user, register, login, getProfile, logout }}>
+        <AuthContext.Provider value={{ user, register, login, getProfile, logout, allusers, getallUsers }}>
             {children}
         </AuthContext.Provider>
     );

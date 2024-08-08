@@ -4,6 +4,7 @@ import Service from "../components/Service";
 import TechWeLove from "../components/TechWeLove";
 import TrustedBy from "../components/TrustedBy";
 // import { testApi } from "../api/Api";
+import Footer from "../components/Footer"
 
 const Homepage = () => {
   // useEffect(() => {
@@ -22,6 +23,7 @@ const Homepage = () => {
       <TrustedBy />
       <Service />
       <TechWeLove />
+      <Footer/>
     </div>
   );
 };

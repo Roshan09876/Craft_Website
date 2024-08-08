@@ -126,10 +126,26 @@ const getProfile = async (req, res) => {
     }
 }
 
+const allUser = async(req, res) => {
+    try {
+        const users = await User.find()
+        return res.status(200).json({
+            success: true,
+            users,
+            message: "ALl User Fetched Successfully"
+        })
+    } catch (error) {
+        console.log(`Error in all Users  ${error}`)
+        return res.status(500).send("Internal Server Error")
+        
+    }
+}
+
 
 
 module.exports = {
     register,
     login,
-    getProfile
+    getProfile,
+    allUser
 }

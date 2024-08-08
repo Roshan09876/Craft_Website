@@ -10,12 +10,11 @@ import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 const Navbar = () => {
-  const [menuOpen, setMenuopen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
 
-
   const toggleButton = () => {
-    setMenuopen(!menuOpen);
+    setMenuOpen(!menuOpen);
   };
 
   return (
@@ -51,74 +50,103 @@ const Navbar = () => {
             </h1>
           </div>
           <div className="hidden lg:flex md:flex sm:flex sm:text-xs md:text-sm lg:text-base">
-            <Link
-              to="/"
-              className="font-bold hover:cursor-pointer text-primary mr-5"
-            >
-              Home
-            </Link>
-            <Link
-              to="/products"
-              className="font-bold hover:cursor-pointer text-primary mr-5"
-            >
-              Products
-            </Link>
             {
-              user != null ? (
+              user != null && user.isAdmin ? (
                 <Link
-                  to="/profile"
+                  to="/admin/dashboard"
                   className="font-bold hover:cursor-pointer text-primary mr-5"
                 >
-                  Profile
+                  Home
                 </Link>
               ) : (
-                <></>
+                <Link
+                  to="/"
+                  className="font-bold hover:cursor-pointer text-primary mr-5"
+                >
+                  Home
+                </Link>
               )
             }
+
+            {
+              user != null && user.isAdmin ? (
+                <></>
+              ) : (
+                <Link
+                  to="/products"
+                  className="font-bold hover:cursor-pointer text-primary mr-5"
+                >
+                  Products
+                </Link>
+
+              )
+            }
+            {user != null && user.isAdmin ? (
+              <>
+                <Link
+                  to="/admin/products"
+                  className="font-bold hover:cursor-pointer text-primary mr-5"
+                >
+                  Product List
+                </Link>
+              </>
+            ) : null}
+            <Link
+              to="/profile"
+              className="font-bold hover:cursor-pointer text-primary mr-5"
+            >
+              Profile
+            </Link>
             <Link
               to="/about"
               className="font-bold hover:cursor-pointer text-primary mr-5"
             >
               About Us
             </Link>
-            <Link
-              to="/cart"
-              className="font-bold hover:cursor-pointer text-primary mr-5"
-            >
-              Cart
-            </Link>
-          </div>
-          <div className="px-5">
             {
-              user == null ? (
-                <div className=" hidden md:block h-1/2  px-5 py-2 gap-2 text-white">
-                  <SupervisedUserCircleIcon />
-                  <Link to='/register'>
-                    <button className="lg:w-32 md:w-13 mr-5 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
-                      Register
-                    </button>
-                  </Link>
-                  <Link to='/login'>
-                    <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
-                      Login
-                    </button>
-                  </Link>
-                </div>
+              user != null && user.isAdmin ? (
+                <></>
               ) : (
-                <div className="flex items-center">
-                  <h1 className="font-medium text-2xl mr-2">Welcome!! {user.firstName}</h1>
-                  <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 text-white bg-red-600 transform transition-transform duration-300 hover:scale-110"
-                    onClick={logout}
-                  >
-                    Log Out
-                  </button>
-                </div>
+                <Link
+                  to="/cart"
+                  className="font-bold hover:cursor-pointer text-primary mr-5"
+                >
+                  Cart
+                </Link>
               )
             }
           </div>
+          <div className="px-5">
+            {user == null ? (
+              <div className="hidden md:block h-1/2 px-5 py-2 gap-2 text-white">
+                <SupervisedUserCircleIcon />
+                <Link to="/register">
+                  <button className="lg:w-32 md:w-13 mr-5 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110">
+                    Register
+                  </button>
+                </Link>
+                <Link to="/login">
+                  <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110">
+                    Login
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <h1 className="font-medium text-2xl mr-2">
+                  Welcome!! {user.firstName}
+                </h1>
+                <button
+                  className="lg:w-32 md:w-13 ml-3 px-3 py-2 text-white bg-red-600 transform transition-transform duration-300 hover:scale-110"
+                  onClick={logout}
+                >
+                  Log Out
+                </button>
+              </div>
+            )}
+          </div>
           <i
-            className={`fa ${menuOpen ? "fa-times" : "fa-bars"
-              } text-2xl sm:hidden cursor-pointer`}
+            className={`fa ${menuOpen ? "fa-times" : "fa-bars"} text-2xl sm:hidden cursor-pointer`}
             onClick={toggleButton}
             aria-hidden="true"
           ></i>
@@ -133,15 +161,30 @@ const Navbar = () => {
               </li>
             </Link>
             <Link to="/products" className="block font-semibold">
-              <li className="py-2  px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
-                Product
-              </li>
-            </Link>
-            <Link to="/profile" className="block font-semibold">
               <li className="py-2 px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
-                Profile
+                Products
               </li>
             </Link>
+            {user != null && user.isAdmin ? (
+              <>
+                <Link to="/admin/users" className="block font-semibold">
+                  <li className="py-2 px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
+                    Users
+                  </li>
+                </Link>
+                <Link to="/admin/products" className="block font-semibold">
+                  <li className="py-2 px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
+                    Product List
+                  </li>
+                </Link>
+              </>
+            ) : user != null ? (
+              <Link to="/profile" className="block font-semibold">
+                <li className="py-2 px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
+                  Profile
+                </li>
+              </Link>
+            ) : null}
             <Link to="/about" className="block font-semibold">
               <li className="py-2 px-5 hover:bg-primary hover:text-white hover:rounded-xl hover:cursor-pointer">
                 About us

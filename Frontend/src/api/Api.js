@@ -23,6 +23,11 @@ export const loginApi = (userData) => Api.post("user/login", userData);
 
 export const getProfileApi = (id) => Api.get(`user/profile/${id}`, getAuthHeaders());
 
+
+//------------------------- All Users -------------------------
+export const getallusersAPI = () => Api.get("user/allusers")
+
+
 //-------------------------  Get Products -------------------------
 export const getProductApi = () => Api.get("product/getallproduct")
 

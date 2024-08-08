@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ProductContext from '../context/ProductContext';
+import Footer from "../components/Footer"
+
 
 const Details = () => {
   const { productId } = useParams();
@@ -25,6 +27,7 @@ const Details = () => {
   if (!selectedProduct) return <div className="flex justify-center items-center h-screen">Product not found</div>;
 
   return (
+ <>
     <div className="px-10 py-10 min-h-screen">
       <h1 className="font-extrabold text-4xl mb-5">{selectedProduct.title} Details</h1>
 
@@ -41,6 +44,8 @@ const Details = () => {
       </div>
 
     </div>
+    <Footer/>
+ </>
   );
 };
 
