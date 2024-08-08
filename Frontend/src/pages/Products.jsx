@@ -24,7 +24,10 @@ const Products = () => {
           product.map((item) => (
             <div key={item._id} className='border p-4 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 hover:bg-gradient-to-r from-[#e0f7f8] via-white to-[#e0f7f8]'>
               <img src={item.image} alt={item.title} className='w-full h-48 object-cover mb-4 rounded-lg' />
-              <h1 className='font-bold text-xl mb-2'>{item.title}</h1>
+              <div className='flex flex-row justify-between'>
+                <h1 className='font-bold text-xl mb-2'>{item.title}</h1>
+                <h1 className='font-semibold text-base text-green-600 mb-2'>Rs. {item.price}</h1>
+              </div>
               {/* <h2 className='text-gray-700'>{item.description}</h2> */}
               <div className='flex flex-row justify-between'>
                 <Link to={`/details/${item._id}`}>
@@ -32,7 +35,7 @@ const Products = () => {
                     View Details
                   </h1>
                 </Link>
-                <Link to='/'>
+                <Link to={`/${item._id}`}>
                   <button className="lg:w-32 text-white mt-2 md:w-13 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110" >
                     Add to Cart
                   </button>

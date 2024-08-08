@@ -26,3 +26,6 @@ export const getProfileApi = (id) => Api.get(`user/profile/${id}`, getAuthHeader
 //-------------------------  Get Products -------------------------
 export const getProductApi = () => Api.get("product/getallproduct")
 
+//-------------------------  Get Products By ID -------------------------
+export const getProductByIDApi = (id) => Api.get(`product/product/${id}`)
+

@@ -2,7 +2,7 @@ const Product = require("../models/productModel")
 const cloudinary = require("cloudinary").v2;
 
 const createProduct = async (req, res) => {
-    const { title, description, image } = req.body;
+    const { title, description, image, price } = req.body;
     console.log(req.body)
     if (!title || !description) {
         return res.status(400).send('Please enter all fields')
@@ -26,6 +26,7 @@ const createProduct = async (req, res) => {
         const newProduct = new Product({
             title: title,
             description: description,
+            price: price,
             image: imageUrl
         })
         await newProduct.save();

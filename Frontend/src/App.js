@@ -32,7 +32,7 @@ function App() {
               <Route path="/about" element={<Aboutus />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/products" element={<Products />} />
-              <Route path="/details/:detailId" element={<Details />} />
+              <Route path="/details/:productId" element={<Details />} />
             </Routes>
             <Footer/>
           </BrowserRouter>
