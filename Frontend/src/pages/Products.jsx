@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import CloudAnimation from "../animation_component/CloudAnimation"
 import { useTypewriter } from 'react-simple-typewriter';
+import Footer from '../components/Footer';
 
 const Products = () => {
   const { product, getallProduct } = useContext(ProductContext);
@@ -32,7 +33,8 @@ const Products = () => {
 
 
   return (
-    <div className='px-10 py-10'>
+<>
+<div className='px-10 py-10'>
       {
         user == null ? (
           <>
@@ -73,7 +75,10 @@ const Products = () => {
           </>
         )
       }
+     
     </div>
+    <Footer/>
+</>
   );
 }
 

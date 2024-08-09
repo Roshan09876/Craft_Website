@@ -6,16 +6,22 @@ import logo from "../assets/logo.png";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate()
 
   const toggleButton = () => {
     setMenuOpen(!menuOpen);
   };
+  const handleLogOut = async () => {
+    localStorage.clear();
+    window.location.reload();
+    navigate("/")
+  }
 
   return (
     <div className="bg-primary w-full mb-4">
@@ -138,7 +144,7 @@ const Navbar = () => {
                 </h1>
                 <button
                   className="lg:w-32 md:w-13 ml-3 px-3 py-2 text-white bg-red-600 transform transition-transform duration-300 hover:scale-110"
-                  onClick={logout}
+                  onClick={handleLogOut}
                 >
                   Log Out
                 </button>

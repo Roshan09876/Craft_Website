@@ -8,6 +8,7 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem("userData")) || null);
     const [allusers, setAllUsers] = useState([])
 
+
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("userData"));
         if (storedUser) {
@@ -64,11 +65,7 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const logout = () => {
-        localStorage.clear();
-        setUser(null);
-        window.location.reload();
-    };
+   
 
     const getallUsers = useCallback(async () => {
         try {
@@ -84,7 +81,7 @@ const AuthProvider = ({ children }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, register, login, getProfile, logout, allusers, getallUsers }}>
+        <AuthContext.Provider value={{ user, register, login, getProfile, allusers, getallUsers }}>
             {children}
         </AuthContext.Provider>
     );
