@@ -56,7 +56,7 @@ const getallProduct = async (req, res) => {
         })
     } catch (error) {
         console.log(`Error while Fetching all Product is ${error}`)
-        res.status(400).send("Internal Server Error")
+        res.status(500).send("Internal Server Error")
     }
 }
 
@@ -73,7 +73,7 @@ const getProductById = async (req, res) => {
         })
     } catch (error) {
         console.log(`Error while Fetching  Product is ${error}`)
-        res.status(400).send("Internal Server Error")
+        res.status(500).send("Internal Server Error")
     }
 }
 

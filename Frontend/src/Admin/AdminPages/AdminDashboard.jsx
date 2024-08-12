@@ -91,52 +91,54 @@ const AdminDashboard = () => {
   });
 
   return (
-    <div className="px-10 py-10">
-      <div className="px-10 py-5 bg-white shadow-lg rounded-lg">
-        <h1 className="font-bold text-4xl text-primary mb-5">Admin Dashboard</h1>
-        <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
-        <div className="overflow-x-auto mt-5">
-          <table className="min-w-full bg-white border border-gray-300 rounded-lg">
-            <thead className="bg-primary text-white">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <th
-                      key={header.id}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="py-3 px-6 border-b cursor-pointer text-left"
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getIsSorted() ? (
-                        header.column.getIsSorted() === 'desc' ? (
-                          <span> 🔽</span>
+    <>
+      <div className="px-10 py-10">
+        <div className="px-10 py-5 bg-white shadow-lg rounded-lg">
+          <h1 className="font-bold text-4xl text-primary mb-5">Admin Dashboard</h1>
+          <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          <div className="overflow-x-auto mt-5">
+            <table className="min-w-full bg-white border border-gray-300 rounded-lg">
+              <thead className="bg-primary text-white">
+                {table.getHeaderGroups().map(headerGroup => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
+                      <th
+                        key={header.id}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="py-3 px-6 border-b cursor-pointer text-left"
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.getIsSorted() ? (
+                          header.column.getIsSorted() === 'desc' ? (
+                            <span> 🔽</span>
+                          ) : (
+                            <span> 🔼</span>
+                          )
                         ) : (
-                          <span> 🔼</span>
-                        )
-                      ) : (
-                        ''
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map(row => (
-                <tr key={row.id} className="hover:bg-gray-100 transition duration-150">
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="py-3 px-6 border-b text-left">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                          ''
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map(row => (
+                  <tr key={row.id} className="hover:bg-gray-100 transition duration-150">
+                    {row.getVisibleCells().map(cell => (
+                      <td key={cell.id} className="py-3 px-6 border-b text-left">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <Footer/>
-    </div>
+      <Footer />
+    </>
   );
 };
 

@@ -3,7 +3,7 @@ import React from 'react'
 const AdminProduct = () => {
   return (
     <div className='px-10 py-10'>
-      <h1>This is Product Page</h1>
+      <h1 className='px-10'>This is Product Page</h1>
     </div>
   )
 }

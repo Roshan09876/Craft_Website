@@ -83,7 +83,7 @@ const login = async (req, res) => {
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
-            // cartItems: userData.cartItems,
+            cartItems: userData.cartItems,
             image: userData.image,
             isAdmin: userData.isAdmin
         }
@@ -140,8 +140,6 @@ const allUser = async(req, res) => {
         
     }
 }
-
-
 
 module.exports = {
     register,

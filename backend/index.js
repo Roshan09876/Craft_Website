@@ -33,6 +33,7 @@ app.use(cors(corsOptions))
 
 app.use('/api/user', require("./routes/userRoutes"))
 app.use('/api/product', require("./routes/productroutes"))
+app.use('/api/cart', require("./routes/cartRoute"))
 
 app.get('/', (req, res) => {
     res.send("Hello from the server")
