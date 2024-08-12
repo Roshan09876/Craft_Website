@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react";
 import EmailIcon from "@mui/icons-material/Email";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import logo from "../assets/logo.png";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
