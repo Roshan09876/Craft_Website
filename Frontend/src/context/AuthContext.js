@@ -7,12 +7,13 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem("userData")) || null);
     const [allusers, setAllUsers] = useState([])
-
+    const [cartItems, setCartItems] = useState(user?.cartItems || []);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("userData"));
         if (storedUser) {
             setUser(storedUser);
+            setCartItems(storedUser.cartItems);
         }
     }, []);
 
@@ -65,7 +66,7 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
-   
+
 
     const getallUsers = useCallback(async () => {
         try {
@@ -81,7 +82,7 @@ const AuthProvider = ({ children }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ user, register, login, getProfile, allusers, getallUsers }}>
+        <AuthContext.Provider value={{ user, cartItems, register, login, getProfile, allusers, getallUsers }}>
             {children}
         </AuthContext.Provider>
     );

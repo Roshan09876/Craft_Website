@@ -34,3 +34,7 @@ export const getProductApi = () => Api.get("product/getallproduct")
 //-------------------------  Get Products By ID -------------------------
 export const getProductByIDApi = (id) => Api.get(`product/product/${id}`)
 
+//-------------------------  Get Cart By User ID -------------------------
+export const getCartApi = (userId) => Api.get(`/cart/getcart/${userId}`, getAuthHeaders());
+
+

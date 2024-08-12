@@ -55,7 +55,7 @@ const register = async (req, res) => {
 
     } catch (error) {
         console.error(`Error while Registering: ${error}`);
-        res.status(500).send("Internal Server Error"); // Change to 500 for server errors
+        res.status(500).send("Internal Server Error"); 
     }
 };
 
