@@ -1,11 +1,12 @@
 import { createContext, useCallback, useState } from "react";
-import { getProductApi, getProductByIDApi } from "../api/Api";
+import { createProductApi, getProductApi, getProductByIDApi } from "../api/Api";
 
 const ProductContext = createContext();
 
 const ProductProvider = ({ children }) => {
     const [product, setProduct] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [createdProduct, setCreatedProduct] = useState(null);
 
     const getallProduct = useCallback(async () => {
         try {
@@ -33,8 +34,23 @@ const ProductProvider = ({ children }) => {
         }
     }, []);
 
+    const createNewProduct = async (formData) => {
+        try {
+            const response = await createProductApi(formData);
+            if (response.status === 200 || response.status === 201) {
+                setCreatedProduct(response.data.product);
+                console.log('Product created:', response.data.product);
+            }
+        } catch (error) {
+            console.error(`Error while creating product: ${error}`);
+            throw error;
+        }
+    };
+
+
+
     return (
-        <ProductContext.Provider value={{ product, getallProduct, getProductById, selectedProduct }}>
+        <ProductContext.Provider value={{ product, getallProduct, getProductById, selectedProduct, createdProduct, createNewProduct }}>
             {children}
         </ProductContext.Provider>
     );

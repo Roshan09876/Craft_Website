@@ -2,46 +2,50 @@ const Product = require("../models/productModel")
 const cloudinary = require("cloudinary").v2;
 
 const createProduct = async (req, res) => {
-    const { title, description, image, price } = req.body;
-    console.log(req.body)
-    if (!title || !description) {
-        return res.status(400).send('Please enter all fields')
+    const { title, description, price } = req.body;
+    const image = req.files?.image; // Access file if using middleware
+
+    if (!title || !description || !price) {
+        return res.status(400).send('Please enter all fields');
     }
+
     try {
         let imageUrl = '';
 
-        if (typeof image === "string" && image.startsWith("http")) {
-            imageUrl = image;
-        } else if (req.files && req.files.image) {
-            const uploadedImage = await cloudinary.uploader.upload(req.files.image, {
+        if (image) {
+            // Ensure you access the file correctly
+            const uploadedImage = await cloudinary.uploader.upload(image.path, {
                 folder: "product",
                 crop: "scale"
-            })
-            imageUrl = uploadedImage.secure_url
+            });
+            imageUrl = uploadedImage.secure_url;
         }
-        const productExist = await Product.findOne({ title: title })
+
+        const productExist = await Product.findOne({ title: title });
         if (productExist) {
-            return res.status(400).send("Product Already Exists")
+            return res.status(400).send("Product Already Exists");
         }
+
         const newProduct = new Product({
             title: title,
             description: description,
             price: price,
             image: imageUrl
-        })
+        });
+
         await newProduct.save();
         res.json({
             success: true,
             message: "Product created successfully",
             product: newProduct
-        })
+        });
 
     } catch (error) {
-        console.log(`Error while Creating Product is ${error}`)
-        res.status(400).send("Internal Server Error")
+        console.log(`Error while Creating Product: ${error}`);
+        res.status(400).send("Internal Server Error");
     }
+};
 
-}
 
 const getallProduct = async (req, res) => {
     try {
