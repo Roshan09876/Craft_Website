@@ -1,5 +1,6 @@
-const mongoose = require("mongoose")
-const userSchema = mongoose.Schema({
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true
@@ -10,7 +11,8 @@ const userSchema = mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -18,19 +20,25 @@ const userSchema = mongoose.Schema({
     },
     image: {
         type: String,
-        required: false
     },
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    failedLoginAttempts: {
+        type: Number,
+        default: 0
+    },
+    lockUntil: {
+        type: Date,
+        default: null
     }
-}, { timestamps: true })
+}, { timestamps: true });
+
+userSchema.methods.isLocked = function () {
+    return this.lockUntil && this.lockUntil > Date.now();
+};
 
 const User = mongoose.model("User", userSchema);
-module.exports = User;
 
-// cartItems: [{
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "Product"
-// }],
-  
+module.exports = User;

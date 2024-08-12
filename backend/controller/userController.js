@@ -16,7 +16,6 @@ const generateRandomPassword = () => {
     return Math.random().toString(36).slice(-8);
 }
 
-// Function to validate password length and complexity
 const validatePassword = (password) => {
     const minLength = 8;
     const maxLength = 12;
@@ -90,7 +89,6 @@ const register = async (req, res) => {
                 <h2>Hello ${firstName},</h2>
                 <p>Your account has been created successfully. Here is your temporary password: <strong>${randomPassword}</strong></p>
                 <p>Please use this password to log in and update it after logging in.</p>
-                <p><a href="${process.env.FRONTEND_URL}/verify-email?token=${token}">Click here to verify your email</a></p>
             `
         };
         await sendEmail(emailOptions);
@@ -106,47 +104,116 @@ const register = async (req, res) => {
     }
 };
 
+// const login = async (req, res) => {
+//     const { email, password } = req.body;
+//     console.log(req.body)
+//     if (!email || !password) {
+//         return res.status(400).json({
+//             success: false,
+//             message: "Please Enter all fields"
+//         });
+//     }
+//     try {
+//         const userData = await User.findOne({ email: email })
+//         if (!userData) {
+//             return res.status(400).send("User Not Found")
+//         }
+//         const checkPassword = await userData.password
+//         const isMatched = await bcrypt.compare(password, checkPassword);
+//         if (!isMatched) {
+//             return res.status(400).send("Incorrect Password")
+//         }
+//         const payload = {
+//             id: userData.id,
+//             firstName: userData.firstName,
+//             lastName: userData.lastName,
+//             email: userData.email,
+//             cartItems: userData.cartItems,
+//             image: userData.image,
+//             isAdmin: userData.isAdmin
+//         }
+//         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "6hr" })
+//         return res.status(200).json({
+//             success: true,
+//             token: token,
+//             userData,
+//             message: "Login Successfully"
+//         });
+
+//     } catch (error) {
+//         console.log(`Error while Login ${error}`)
+//         res.status(400).send("Internal Server Error")
+//     }
+// }
+
 const login = async (req, res) => {
     const { email, password } = req.body;
-    console.log(req.body)
+
     if (!email || !password) {
         return res.status(400).json({
             success: false,
-            message: "Please Enter all fields"
+            message: "Please enter all fields"
         });
     }
+
     try {
-        const userData = await User.findOne({ email: email })
+        const userData = await User.findOne({ email: email });
         if (!userData) {
-            return res.status(400).send("User Not Found")
+            return res.status(400).json({ success: false, message: "User not found" });
         }
-        const checkPassword = await userData.password
-        const isMatched = await bcrypt.compare(password, checkPassword);
+
+        if (userData.isLocked()) {
+            return res.status(403).json({
+                success: false,
+                message: "Account is locked due to too many failed login attempts. Please try again later."
+            });
+        }
+
+        const isMatched = await bcrypt.compare(password, userData.password);
         if (!isMatched) {
-            return res.status(400).send("Incorrect Password")
+            userData.failedLoginAttempts += 1;
+
+            if (userData.failedLoginAttempts >= 5) {  
+                userData.lockUntil = Date.now() + (1 * 60 * 1000);  // Lock the account for 1 minutes
+                userData.failedLoginAttempts = 0; 
+            }
+
+            await userData.save();
+
+            return res.status(400).json({
+                success: false,
+                message: "Incorrect password. If you fail to login multiple times, your account will be locked."
+            });
         }
+
+        // Reset failed login attempts and lockUntil if login is successful
+        userData.failedLoginAttempts = 0;
+        userData.lockUntil = null;
+        await userData.save();
+
         const payload = {
             id: userData.id,
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
-            cartItems: userData.cartItems,
             image: userData.image,
             isAdmin: userData.isAdmin
-        }
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "6hr" })
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "6hr" });
+
         return res.status(200).json({
             success: true,
             token: token,
             userData,
-            message: "Login Successfully"
+            message: "Login successfully"
         });
 
     } catch (error) {
-        console.log(`Error while Login ${error}`)
-        res.status(400).send("Internal Server Error")
+        console.error(`Error while Login ${error}`);
+        return res.status(500).send("Internal Server Error");
     }
-}
+};
+
 
 const getProfile = async (req, res) => {
     try {

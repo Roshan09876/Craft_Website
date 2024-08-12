@@ -109,38 +109,51 @@ const Navbar = () => {
             >
               About Us
             </Link>
+
             {
               user != null && user.isAdmin ? (
-                <></>
+                <>
+                </>
               ) : (
-                <Link
-                  to="/cart"
-                  className="font-bold hover:cursor-pointer text-primary mr-5"
-                >
-                  Cart
-                </Link>
+                <>
+                  <Link
+                    to="/cart"
+                    className="font-bold hover:cursor-pointer text-primary mr-5"
+                  >
+                    Cart
+                  </Link>
+                </>
+
               )
             }
           </div>
-          <div className="px-5">
+
+          <div className="px-5 flex">
             {user == null ? (
-              <div className="hidden md:block h-1/2 px-5 py-2 gap-2 text-white">
-                <SupervisedUserCircleIcon />
-                <Link to="/register">
-                  <button className="lg:w-32 md:w-13 mr-5 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110">
-                    Register
-                  </button>
-                </Link>
-                <Link to="/login">
-                  <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110">
-                    Login
-                  </button>
-                </Link>
-              </div>
+              <>
+                <div className="text-black mt-4 mr-5 font-bold">
+                  👋  Hey! Guest
+                </div>
+                <div className="hidden md:block h-1/2 px-5 py-2 gap-2 text-white">
+
+                  <Link to="/register">
+                    <button className="lg:w-32 md:w-13 mr-5 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110">
+                      Register
+                    </button>
+
+                  </Link>
+                  <Link to="/login">
+                    <button className="lg:w-32 md:w-13 ml-3 px-3 py-2 bg-primary transform transition-transform duration-300 hover:scale-110">
+                      Login
+                    </button>
+                  </Link>
+
+                </div>
+              </>
             ) : (
               <div className="flex items-center">
                 <h1 className="font-medium text-2xl mr-2">
-                  Welcome!! {user.firstName}
+                  👋 Hey! {user.firstName}
                 </h1>
                 <button
                   className="lg:w-32 md:w-13 ml-3 px-3 py-2 text-white bg-red-600 transform transition-transform duration-300 hover:scale-110"
