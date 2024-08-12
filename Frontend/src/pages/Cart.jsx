@@ -32,9 +32,7 @@ const Cart = () => {
                         <div key={item._id} className='bg-white shadow-md rounded-lg p-4 flex items-center space-x-4'>
                             <img src={item.product.image} alt={item.product.title} className='w-24 h-24 object-cover rounded-lg' />
                             <div className='flex-1'>
-                                <h2 className='text-xl font-semibold'>{item.product.title}</h2>
-                                <p className='text-gray-600'>{item.product.description}</p>
-                                <div className='flex justify-between items-center mt-2'>
+                                <h2 className='text-xl font-semibold'>{item.product.title}</h2>                                <div className='flex justify-between items-center mt-2'>
                                     <p className='text-lg font-medium'>${item.product.price}</p>
                                     <p className='text-sm text-primary'>Quantity: {item.quantity}</p>
                                 </div>

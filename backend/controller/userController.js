@@ -1,25 +1,58 @@
 const User = require("../models/userModel");
-const cloudinary = require("cloudinary")
-const jwt = require("jsonwebtoken")
+const cloudinary = require("cloudinary");
+const jwt = require("jsonwebtoken");
+const { sendEmail } = require("../middleware/sendMail");
 const bcrypt = require("bcrypt")
+
+
+// Email validation function using regex
+const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Function to generate random password
+const generateRandomPassword = () => {
+    return Math.random().toString(36).slice(-8);
+}
+
+// Function to validate password length and complexity
+const validatePassword = (password) => {
+    const minLength = 8;
+    const maxLength = 12;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/;
+
+    if (password.length < minLength || password.length > maxLength) {
+        return `Password should be between ${minLength} to ${maxLength} characters long.`;
+    }
+
+    if (!passwordRegex.test(password)) {
+        return 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.';
+    }
+
+    return null;
+};
+
 
 const register = async (req, res) => {
     const { firstName, lastName, email, password, image } = req.body;
-    console.log(req.body);
 
-    // Validate required fields
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email) {
         return res.status(400).send('Please enter all required fields');
+    }
+    if (!validateEmail(email)) {
+        return res.status(400).send('Please enter a valid email address');
+    }
+    const passwordError = validatePassword(password || generateRandomPassword());
+    if (passwordError) {
+        return res.status(400).send(passwordError);
     }
 
     try {
         let imageUrl = '';
-
-        // Handle image processing if provided
         if (image && typeof image === 'string' && image.startsWith('http')) {
-            imageUrl = image; // Use provided image URL
+            imageUrl = image;
         } else if (req.files && req.files.image) {
-            // Handle image upload if a file is provided
             const uploadedImage = await cloudinary.uploader.upload(req.files.image.path, {
                 folder: "user",
                 crop: "scale"
@@ -27,17 +60,16 @@ const register = async (req, res) => {
             imageUrl = uploadedImage.secure_url;
         }
 
-        // Check if user already exists
         const userExist = await User.findOne({ email: email });
         if (userExist) {
             return res.status(400).send("User Already Exists");
         }
 
-        // Hash the password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const randomPassword = password || generateRandomPassword();
 
-        // Create and save new user
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
         const userData = new User({
             firstName,
             lastName,
@@ -47,15 +79,30 @@ const register = async (req, res) => {
         });
         await userData.save();
 
+        // Create verification token (optional, based on your requirements)
+        const token = jwt.sign({ email: userData.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Send verification email with the random password
+        const emailOptions = {
+            to: userData.email,
+            subject: 'Account Verification & Password',
+            html: `
+                <h2>Hello ${firstName},</h2>
+                <p>Your account has been created successfully. Here is your temporary password: <strong>${randomPassword}</strong></p>
+                <p>Please use this password to log in and update it after logging in.</p>
+                <p><a href="${process.env.FRONTEND_URL}/verify-email?token=${token}">Click here to verify your email</a></p>
+            `
+        };
+        await sendEmail(emailOptions);
+
         return res.status(200).json({
             success: true,
-            userData,
-            message: "Registered Successfully"
+            message: "Registered Successfully. Please check your email for verification and password."
         });
 
     } catch (error) {
         console.error(`Error while Registering: ${error}`);
-        res.status(500).send("Internal Server Error"); 
+        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -94,14 +141,6 @@ const login = async (req, res) => {
             userData,
             message: "Login Successfully"
         });
-        // if (!userData.cartItems || userData.cartItems.length === 0) {
-        //     return res.status(200).json({
-        //         success: false,
-        //         token: token,
-        //         userData,
-        //         message: "Please select a course"
-        //     });
-        // }
 
     } catch (error) {
         console.log(`Error while Login ${error}`)
@@ -126,7 +165,7 @@ const getProfile = async (req, res) => {
     }
 }
 
-const allUser = async(req, res) => {
+const allUser = async (req, res) => {
     try {
         const users = await User.find()
         return res.status(200).json({
@@ -137,7 +176,7 @@ const allUser = async(req, res) => {
     } catch (error) {
         console.log(`Error in all Users  ${error}`)
         return res.status(500).send("Internal Server Error")
-        
+
     }
 }
 
