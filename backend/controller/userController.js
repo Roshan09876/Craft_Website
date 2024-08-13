@@ -2,7 +2,8 @@ const User = require("../models/userModel");
 const cloudinary = require("cloudinary");
 const jwt = require("jsonwebtoken");
 const { sendEmail } = require("../middleware/sendMail");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const LoginActivity = require("../models/loginActivitySchema");
 
 
 // Email validation function using regex
@@ -104,48 +105,6 @@ const register = async (req, res) => {
     }
 };
 
-// const login = async (req, res) => {
-//     const { email, password } = req.body;
-//     console.log(req.body)
-//     if (!email || !password) {
-//         return res.status(400).json({
-//             success: false,
-//             message: "Please Enter all fields"
-//         });
-//     }
-//     try {
-//         const userData = await User.findOne({ email: email })
-//         if (!userData) {
-//             return res.status(400).send("User Not Found")
-//         }
-//         const checkPassword = await userData.password
-//         const isMatched = await bcrypt.compare(password, checkPassword);
-//         if (!isMatched) {
-//             return res.status(400).send("Incorrect Password")
-//         }
-//         const payload = {
-//             id: userData.id,
-//             firstName: userData.firstName,
-//             lastName: userData.lastName,
-//             email: userData.email,
-//             cartItems: userData.cartItems,
-//             image: userData.image,
-//             isAdmin: userData.isAdmin
-//         }
-//         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "6hr" })
-//         return res.status(200).json({
-//             success: true,
-//             token: token,
-//             userData,
-//             message: "Login Successfully"
-//         });
-
-//     } catch (error) {
-//         console.log(`Error while Login ${error}`)
-//         res.status(400).send("Internal Server Error")
-//     }
-// }
-
 const login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -159,10 +118,28 @@ const login = async (req, res) => {
     try {
         const userData = await User.findOne({ email: email });
         if (!userData) {
+            await new LoginActivity({
+                email,
+                role: "user",  // Assuming default role, you might want to adjust this logic
+                success: false,
+                message: "User not found",
+                endpoint: req.originalUrl,
+                requestDetails: JSON.stringify(req.body)
+            }).save();
+
             return res.status(400).json({ success: false, message: "User not found" });
         }
 
         if (userData.isLocked()) {
+            await new LoginActivity({
+                email: userData.email,
+                role: userData.isAdmin ? "admin" : "user",
+                success: false,
+                message: "Account is locked due to too many failed login attempts. Please try again later.",
+                endpoint: req.originalUrl,
+                requestDetails: JSON.stringify(req.body)
+            }).save();
+
             return res.status(403).json({
                 success: false,
                 message: "Account is locked due to too many failed login attempts. Please try again later."
@@ -179,6 +156,15 @@ const login = async (req, res) => {
             }
 
             await userData.save();
+
+            await new LoginActivity({
+                email: userData.email,
+                role: userData.isAdmin ? "admin" : "user",
+                success: false,
+                message: "Incorrect password.",
+                endpoint: req.originalUrl,
+                requestDetails: JSON.stringify(req.body)
+            }).save();
 
             return res.status(400).json({
                 success: false,
@@ -200,6 +186,16 @@ const login = async (req, res) => {
             isAdmin: userData.isAdmin
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "6hr" });
+
+        // Log the successful login activity
+        await new LoginActivity({
+            email: userData.email,
+            role: userData.isAdmin ? "admin" : "user",
+            success: true,
+            message: "Login successful",
+            endpoint: req.originalUrl,
+            requestDetails: JSON.stringify(req.body)
+        }).save();
 
         return res.status(200).json({
             success: true,
@@ -247,9 +243,39 @@ const allUser = async (req, res) => {
     }
 }
 
+
+const getLoginActivities = async (req, res) => {
+    try {
+      const activities = await LoginActivity.find().sort({ timestamp: -1 });
+      res.status(200).json({ success: true, activities });
+    } catch (error) {
+      console.error("Error fetching login activities:", error);
+      res.status(500).json({ error: "Internal server error." });
+    }
+  };
+  
+  const deleteLoginActivity = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const activity = await LoginActivity.findByIdAndDelete(id);
+  
+      if (!activity) {
+        return res.status(404).json({ error: "Login activity not found." });
+      }
+  
+      res.status(200).json({ success: true, message: "Login activity deleted successfully." });
+    } catch (error) {
+      console.error("Error deleting login activity:", error);
+      res.status(500).json({ error: "Internal server error." });
+    }
+  };
+
 module.exports = {
     register,
     login,
     getProfile,
-    allUser
+    allUser,
+    getLoginActivities,
+    deleteLoginActivity
 }
