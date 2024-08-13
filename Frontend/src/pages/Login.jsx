@@ -42,9 +42,12 @@ const Login = () => {
       const response = await login(formData);
 
       if (response.success) {
-        navigate(response.userData.isAdmin ? "/admin/dashboard" : "/");
+        if (response && response.userData.isAdmin) {
+          response("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
       } else {
-        // Displaying error messages in the UI
         let errorMessage = response.message;
         if (response.locked) {
           setLockedUntil(response.lockUntil);
