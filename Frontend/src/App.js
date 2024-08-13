@@ -15,6 +15,7 @@ import AdminRoute from "./Admin/AdminRoute";
 import UserRoutes from "./Admin/userRoutes";
 import AdminProduct from "./Admin/AdminPages/AdminProduct";
 import Cart from "./pages/Cart";
+import AdminMainDashboard from "./Admin/AdminPages/AdminMainDashboard";
 
 function App() {
 
@@ -41,7 +42,8 @@ function App() {
 
               {/* Admin Dashboard */}
               <Route element={<AdminRoute />} >
-                <Route path='/admin/dashboard' element={<AdminDashboard />} />
+                <Route path='/admin/dashboard' element={<AdminMainDashboard />} />
+                <Route path='/admin/user' element={<AdminDashboard />} />
                 <Route path='/admin/products' element={<AdminProduct />} />
               </Route>
             </Routes>

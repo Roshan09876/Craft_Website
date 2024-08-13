@@ -75,7 +75,14 @@ const Navbar = () => {
 
             {
               user != null && user.isAdmin ? (
-                <></>
+                <>
+                 <Link
+                  to="/admin/user"
+                  className="font-bold hover:cursor-pointer text-primary mr-5"
+                >
+                  Users
+                </Link>
+                </>
               ) : (
                 <Link
                   to="/products"

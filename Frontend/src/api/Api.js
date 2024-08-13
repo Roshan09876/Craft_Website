@@ -54,5 +54,6 @@ export const deleteCartItemApi = (userId, productId) => Api.delete(`/cart/delete
     data: { userId, productId }, ...getAuthHeaders()
 });
 
-
+//-------------------------  Get Activity Logs -------------------------
+export const getActivityLogsApi = () => Api.get("/user/logactivities", getAuthHeaders());
 
