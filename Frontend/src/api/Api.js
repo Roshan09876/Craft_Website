@@ -41,11 +41,16 @@ export const getProductByIDApi = (id) => Api.get(`product/product/${id}`)
 export const deleteProductByIDApi = (id) => Api.delete(`product/delete/${id}`)
 
 // Add to Cart API
-export const addToCartApi = (userId, productId, quantity) => 
+export const addToCartApi = (userId, productId, quantity) =>
     Api.post('/cart/add', { userId, productId, quantity }, getAuthHeaders());
-
 
 //-------------------------  Get Cart By User ID -------------------------
 export const getCartApi = (userId) => Api.get(`/cart/getcart/${userId}`, getAuthHeaders());
+
+// Delete item from cart
+export const deleteCartItemApi = (userId, productId) => Api.delete(`/cart/delete/`, {
+    data: { userId, productId }, ...getAuthHeaders()
+});
+
 
 
