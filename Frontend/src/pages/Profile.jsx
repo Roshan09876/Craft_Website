@@ -1,3 +1,5 @@
+// Profile.js
+
 import React, { useContext, useEffect, useState } from 'react';
 import AuthContext from '../context/AuthContext';
 
@@ -24,7 +26,7 @@ const Profile = () => {
             }
         };
         fetchUser();
-    }, [getProfile, user]);
+    }, [getProfile]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -49,7 +51,7 @@ const Profile = () => {
     };
 
     return (
-        <div className="flex justify-center items-center mt-12  ">
+        <div className="flex justify-center items-center mt-12">
             <div className="w-1/2 bg-white shadow-lg rounded-lg overflow-hidden">
                 <div className="bg-primary p-6 text-center">
                     <h1 className="text-white text-3xl font-semibold">{isEditing ? 'Edit Profile' : 'Your Profile'}</h1>
@@ -128,7 +130,7 @@ const Profile = () => {
                             )}
                         </div>
                     ) : (
-                        <div className="text-center text-gray-500">Loading profile...</div>
+                        <p>Loading...</p>
                     )}
                 </div>
             </div>

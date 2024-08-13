@@ -50,10 +50,9 @@ const register = async (req, res) => {
 
     try {
         let imageUrl = '';
-        if (image && typeof image === 'string' && image.startsWith('http')) {
-            imageUrl = image;
-        } else if (req.files && req.files.image) {
-            const uploadedImage = await cloudinary.uploader.upload(req.files.image.path, {
+        if (image) {
+            // Ensure you access the file correctly
+            const uploadedImage = await cloudinary.uploader.upload(image.path, {
                 folder: "user",
                 crop: "scale"
             });
@@ -154,7 +153,7 @@ const login = async (req, res) => {
 
             if (userData.failedLoginAttempts >= 5) {
                 userData.lockUntil = Date.now() + (1 * 60 * 1000);  // Lock the account for 1 minute
-                userData.failedLoginAttempts = 0; 
+                userData.failedLoginAttempts = 0;
             }
 
             await userData.save();
@@ -215,112 +214,6 @@ const login = async (req, res) => {
 };
 
 
-// const login = async (req, res) => {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//         return res.status(400).json({
-//             success: false,
-//             message: "Please enter all fields"
-//         });
-//     }
-
-//     try {
-//         const userData = await User.findOne({ email: email });
-//         if (!userData) {
-//             await new LoginActivity({
-//                 email,
-//                 role: "user",  // Assuming default role, you might want to adjust this logic
-//                 success: false,
-//                 message: "User not found",
-//                 endpoint: req.originalUrl,
-//                 requestDetails: JSON.stringify(req.body)
-//             }).save();
-
-//             return res.status(400).json({ success: false, message: "User not found" });
-//         }
-
-//         if (userData.isLocked()) {
-//             await new LoginActivity({
-//                 email: userData.email,
-//                 role: userData.isAdmin ? "admin" : "user",
-//                 success: false,
-//                 message: "Account is locked due to too many failed login attempts. Please try again later.",
-//                 endpoint: req.originalUrl,
-//                 requestDetails: JSON.stringify(req.body)
-//             }).save();
-
-//             return res.status(403).json({
-//                 success: false,
-//                 message: "Account is locked due to too many failed login attempts. Please try again later."
-//             });
-//         }
-
-//         const isMatched = await bcrypt.compare(password, userData.password);
-//         if (!isMatched) {
-//             userData.failedLoginAttempts += 1;
-
-//             if (userData.failedLoginAttempts >= 5) {  
-//                 userData.lockUntil = Date.now() + (1 * 60 * 1000);  // Lock the account for 1 minutes
-//                 userData.failedLoginAttempts = 0; 
-//             }
-
-//             await userData.save();
-
-//             await new LoginActivity({
-//                 email: userData.email,
-//                 role: userData.isAdmin ? "admin" : "user",
-//                 success: false,
-//                 message: "Incorrect password.",
-//                 endpoint: req.originalUrl,
-//                 requestDetails: JSON.stringify(req.body)
-//             }).save();
-
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "Incorrect password. If you fail to login multiple times, your account will be locked."
-//             });
-//         }
-
-//         // Reset failed login attempts and lockUntil if login is successful
-//         userData.failedLoginAttempts = 0;
-//         userData.lockUntil = null;
-//         await userData.save();
-
-//         const payload = {
-//             id: userData.id,
-//             firstName: userData.firstName,
-//             lastName: userData.lastName,
-//             email: userData.email,
-//             image: userData.image,
-//             isAdmin: userData.isAdmin
-//         };
-//         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "6hr" });
-
-//         // Log the successful login activity
-//         await new LoginActivity({
-//             email: userData.email,
-//             role: userData.isAdmin ? "admin" : "user",
-//             success: true,
-//             message: "Login successful",
-//             endpoint: req.originalUrl,
-//             requestDetails: JSON.stringify(req.body)
-//         }).save();
-
-//         return res.status(200).json({
-//             success: true,
-//             token: token,
-//             userData,
-//             message: "Login successfully"
-//         });
-
-//     } catch (error) {
-//         console.error(`Error while Login ${error}`);
-//         return res.status(500).send("Internal Server Error");
-//     }
-// };
-
-
 const getProfile = async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
@@ -356,30 +249,83 @@ const allUser = async (req, res) => {
 
 const getLoginActivities = async (req, res) => {
     try {
-      const activities = await LoginActivity.find().sort({ timestamp: -1 });
-      res.status(200).json({ success: true, activities });
+        const activities = await LoginActivity.find().sort({ timestamp: -1 });
+        res.status(200).json({ success: true, activities });
     } catch (error) {
-      console.error("Error fetching login activities:", error);
-      res.status(500).json({ error: "Internal server error." });
+        console.error("Error fetching login activities:", error);
+        res.status(500).json({ error: "Internal server error." });
     }
-  };
-  
-  const deleteLoginActivity = async (req, res) => {
+};
+
+const deleteLoginActivity = async (req, res) => {
     try {
-      const { id } = req.params;
-  
-      const activity = await LoginActivity.findByIdAndDelete(id);
-  
-      if (!activity) {
-        return res.status(404).json({ error: "Login activity not found." });
-      }
-  
-      res.status(200).json({ success: true, message: "Login activity deleted successfully." });
+        const { id } = req.params;
+
+        const activity = await LoginActivity.findByIdAndDelete(id);
+
+        if (!activity) {
+            return res.status(404).json({ error: "Login activity not found." });
+        }
+
+        res.status(200).json({ success: true, message: "Login activity deleted successfully." });
     } catch (error) {
-      console.error("Error deleting login activity:", error);
-      res.status(500).json({ error: "Internal server error." });
+        console.error("Error deleting login activity:", error);
+        res.status(500).json({ error: "Internal server error." });
     }
-  };
+};
+
+const updateProfile = async (req, res) => {
+    const userId = req.params.id;
+    const { firstName, lastName, email, password } = req.body;
+    const image = req.file; // Assuming image is sent as a file
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        if (firstName) user.firstName = firstName;
+        if (lastName) user.lastName = lastName;
+        if (email) {
+            if (!validateEmail(email)) {
+                return res.status(400).send('Please enter a valid email address');
+            }
+            user.email = email;
+        }
+
+        if (password) {
+            const passwordError = validatePassword(password);
+            if (passwordError) {
+                return res.status(400).send(passwordError);
+            }
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        if (image) {
+            const uploadedImage = await cloudinary.uploader.upload(image.path, {
+                folder: "user",
+                crop: "scale"
+            });
+            user.image = uploadedImage.secure_url;
+        }
+
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user
+        });
+
+    } catch (error) {
+        console.error(`Error while updating profile: ${error}`);
+        return res.status(500).send("Internal Server Error");
+    }
+};
+
+
 
 module.exports = {
     register,
@@ -387,5 +333,6 @@ module.exports = {
     getProfile,
     allUser,
     getLoginActivities,
-    deleteLoginActivity
+    deleteLoginActivity,
+    updateProfile
 }
