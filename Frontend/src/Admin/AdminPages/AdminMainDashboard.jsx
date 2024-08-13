@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Footer from '../../components/Footer';
 import { getActivityLogsApi } from '../../api/Api';
-
+import { useTable, useGlobalFilter, usePagination } from 'react-table';
 
 const AdminMainDashboard = () => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [globalFilter, setGlobalFilter] = useState("");
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
 
     useEffect(() => {
         const fetchActivities = async () => {
@@ -28,6 +31,57 @@ const AdminMainDashboard = () => {
         fetchActivities();
     }, []);
 
+    // Define columns for the table
+    const columns = React.useMemo(
+        () => [
+            { Header: 'ID', accessor: '_id' },
+            { Header: 'Email', accessor: 'email' },
+            { Header: 'Role', accessor: 'role' },
+            { Header: 'Success', accessor: 'success', Cell: ({ value }) => (value ? 'Yes' : 'No') },
+            { Header: 'Message', accessor: 'message' },
+            { Header: 'Endpoint', accessor: 'endpoint' },
+            { Header: 'Request Details', accessor: 'requestDetails' },
+            { Header: 'Timestamp', accessor: 'timestamp', Cell: ({ value }) => new Date(value).toLocaleString() }
+        ],
+        []
+    );
+
+    // Create table instance
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        page,
+        prepareRow,
+        setGlobalFilter: setTableGlobalFilter,
+        state: { globalFilter: tableGlobalFilter },
+        gotoPage,
+        pageOptions,
+        canPreviousPage,
+        canNextPage,
+        pageCount
+    } = useTable(
+        {
+            columns,
+            data: activities,
+            initialState: {
+                pageIndex,
+                pageSize
+            },
+            manualPagination: true,
+            pageCount: Math.ceil(activities.length / pageSize)
+        },
+        useGlobalFilter,
+        usePagination
+    );
+
+    // Update global filter
+    const handleGlobalFilterChange = (e) => {
+        const value = e.target.value || undefined;
+        setGlobalFilter(value);
+        setTableGlobalFilter(value);
+    };
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
 
@@ -35,34 +89,79 @@ const AdminMainDashboard = () => {
         <>
             <div className='px-10 py-10'>
                 <h1 className='text-2xl font-semibold mb-4'>Activity Logs</h1>
-                <table className='min-w-full bg-white border border-gray-200'>
+
+                {/* Search Input */}
+                <input
+                    type='text'
+                    value={globalFilter || ""}
+                    onChange={handleGlobalFilterChange}
+                    placeholder='Search...'
+                    className='mb-4 p-2 border border-gray-300 rounded'
+                />
+
+                {/* Table */}
+                <table {...getTableProps()} className='min-w-full bg-white border border-gray-200'>
                     <thead>
-                        <tr>
-                            <th className='py-2 px-4 border-b'>ID</th>
-                            <th className='py-2 px-4 border-b'>Email</th>
-                            <th className='py-2 px-4 border-b'>Role</th>
-                            <th className='py-2 px-4 border-b'>Success</th>
-                            <th className='py-2 px-4 border-b'>Message</th>
-                            <th className='py-2 px-4 border-b'>Endpoint</th>
-                            <th className='py-2 px-4 border-b'>Request Details</th>
-                            <th className='py-2 px-4 border-b'>Timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {activities.map(activity => (
-                            <tr key={activity._id}>
-                                <td className='py-2 px-4 border-b'>{activity._id}</td>
-                                <td className='py-2 px-4 border-b'>{activity.email}</td>
-                                <td className='py-2 px-4 border-b'>{activity.role}</td>
-                                <td className='py-2 px-4 border-b'>{activity.success ? 'Yes' : 'No'}</td>
-                                <td className='py-2 px-4 border-b'>{activity.message}</td>
-                                <td className='py-2 px-4 border-b'>{activity.endpoint}</td>
-                                <td className='py-2 px-4 border-b'>{activity.requestDetails}</td>
-                                <td className='py-2 px-4 border-b'>{new Date(activity.timestamp).toLocaleString()}</td>
+                        {headerGroups.map(headerGroup => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map(column => (
+                                    <th {...column.getHeaderProps()} className='py-2 px-4 border-b bg-gray-100'>
+                                        {column.render('Header')}
+                                    </th>
+                                ))}
                             </tr>
                         ))}
+                    </thead>
+                    <tbody {...getTableBodyProps()}>
+                        {page.map(row => {
+                            prepareRow(row);
+                            return (
+                                <tr {...row.getRowProps()} className='hover:bg-gray-100'>
+                                    {row.cells.map(cell => (
+                                        <td {...cell.getCellProps()} className='py-2 px-4 border-b'>
+                                            {cell.render('Cell')}
+                                        </td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
+
+                {/* Pagination Controls */}
+                <div className='mt-4 flex justify-between items-center'>
+                    <button
+                        onClick={() => gotoPage(0)}
+                        disabled={!canPreviousPage}
+                        className='px-4 py-2 bg-blue-500 text-white rounded'
+                    >
+                        First
+                    </button>
+                    <button
+                        onClick={() => gotoPage(pageIndex - 1)}
+                        disabled={!canPreviousPage}
+                        className='px-4 py-2 bg-blue-500 text-white rounded'
+                    >
+                        Previous
+                    </button>
+                    <span>
+                        Page <strong>{pageIndex + 1} of {pageCount}</strong>
+                    </span>
+                    <button
+                        onClick={() => gotoPage(pageIndex + 1)}
+                        disabled={!canNextPage}
+                        className='px-4 py-2 bg-blue-500 text-white rounded'
+                    >
+                        Next
+                    </button>
+                    <button
+                        onClick={() => gotoPage(pageCount - 1)}
+                        disabled={!canNextPage}
+                        className='px-4 py-2 bg-blue-500 text-white rounded'
+                    >
+                        Last
+                    </button>
+                </div>
             </div>
             <Footer />
         </>
