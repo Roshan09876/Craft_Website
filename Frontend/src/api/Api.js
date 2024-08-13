@@ -24,8 +24,7 @@ export const loginApi = (userData) => Api.post("user/login", userData);
 export const getProfileApi = (id) => Api.get(`user/profile/${id}`, getAuthHeaders());
 
 // Update Profile API
-
-export const updateProfileApi = (id) => Api.put(`/user/update/${id}`, getAuthHeaders());
+export const updateProfileApi = (id, formData) => Api.put(`/user/update/${id}`, formData, getAuthHeaders());
 
 //------------------------- All Users -------------------------
 export const getallusersAPI = () => Api.get("user/allusers")

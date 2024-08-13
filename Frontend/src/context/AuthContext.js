@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState, useEffect } from "react";
-import { getallusersAPI, getProfileApi, loginApi, registerApi } from "../api/Api";
+import { getallusersAPI, getProfileApi, loginApi, registerApi, updateProfileApi } from "../api/Api";
 import toast from "react-hot-toast";
 
 const AuthContext = createContext();
@@ -81,8 +81,22 @@ const AuthProvider = ({ children }) => {
         }
     }, [])
 
+    const updateProfile = useCallback(async (id, formData) => {
+        try {
+            const response = await updateProfileApi(id, formData);
+            if (response.status === 200) {
+                setUser(response.data.user);
+                localStorage.setItem("userData", JSON.stringify(response.data.user));
+                toast.success("Profile updated successfully");
+            }
+        } catch (error) {
+            toast.error(error.response?.data.message || "An Error Occurred");
+            throw error;
+        }
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ user, cartItems, register, login, getProfile, allusers, getallUsers }}>
+        <AuthContext.Provider value={{ user, cartItems, register, login, getProfile, allusers, getallUsers, updateProfile }}>
             {children}
         </AuthContext.Provider>
     );

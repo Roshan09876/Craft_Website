@@ -1,5 +1,3 @@
-// Profile.js
-
 import React, { useContext, useEffect, useState } from 'react';
 import AuthContext from '../context/AuthContext';
 
@@ -39,12 +37,21 @@ const Profile = () => {
 
     const handleUpdateClick = async () => {
         try {
-            await updateProfile(formData);
+            if (!user?._id) {
+                throw new Error("User ID is not available");
+            }
+            await updateProfile(user._id, formData);
             setIsEditing(false);
         } catch (error) {
             console.log(`Error Updating Profile: ${error}`);
         }
     };
+
+    useEffect(() => {
+        console.log(user);
+    }, [user]);
+
+
 
     const handleBackClick = () => {
         setIsEditing(false);
