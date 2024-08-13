@@ -104,7 +104,6 @@ const register = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
 const login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -130,7 +129,10 @@ const login = async (req, res) => {
             return res.status(400).json({ success: false, message: "User not found" });
         }
 
+        // Check if the account is locked
         if (userData.isLocked()) {
+            const lockTimeRemaining = (userData.lockUntil - Date.now()) / 1000; // in seconds
+
             await new LoginActivity({
                 email: userData.email,
                 role: userData.isAdmin ? "admin" : "user",
@@ -142,7 +144,7 @@ const login = async (req, res) => {
 
             return res.status(403).json({
                 success: false,
-                message: "Account is locked due to too many failed login attempts. Please try again later."
+                message: `Account is locked due to too many failed login attempts. Please try again in ${Math.ceil(lockTimeRemaining)} seconds.`,
             });
         }
 
@@ -150,12 +152,14 @@ const login = async (req, res) => {
         if (!isMatched) {
             userData.failedLoginAttempts += 1;
 
-            if (userData.failedLoginAttempts >= 5) {  
-                userData.lockUntil = Date.now() + (1 * 60 * 1000);  // Lock the account for 1 minutes
+            if (userData.failedLoginAttempts >= 5) {
+                userData.lockUntil = Date.now() + (1 * 60 * 1000);  // Lock the account for 1 minute
                 userData.failedLoginAttempts = 0; 
             }
 
             await userData.save();
+
+            const remainingAttempts = 5 - userData.failedLoginAttempts;
 
             await new LoginActivity({
                 email: userData.email,
@@ -168,7 +172,7 @@ const login = async (req, res) => {
 
             return res.status(400).json({
                 success: false,
-                message: "Incorrect password. If you fail to login multiple times, your account will be locked."
+                message: `Incorrect password. ${remainingAttempts} attempts remaining. After ${remainingAttempts === 0 ? "this" : "the next"} attempt, your account will be locked.`,
             });
         }
 
@@ -201,7 +205,7 @@ const login = async (req, res) => {
             success: true,
             token: token,
             userData,
-            message: "Login successfully"
+            message: "Login successful"
         });
 
     } catch (error) {
@@ -209,6 +213,112 @@ const login = async (req, res) => {
         return res.status(500).send("Internal Server Error");
     }
 };
+
+
+// const login = async (req, res) => {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//         return res.status(400).json({
+//             success: false,
+//             message: "Please enter all fields"
+//         });
+//     }
+
+//     try {
+//         const userData = await User.findOne({ email: email });
+//         if (!userData) {
+//             await new LoginActivity({
+//                 email,
+//                 role: "user",  // Assuming default role, you might want to adjust this logic
+//                 success: false,
+//                 message: "User not found",
+//                 endpoint: req.originalUrl,
+//                 requestDetails: JSON.stringify(req.body)
+//             }).save();
+
+//             return res.status(400).json({ success: false, message: "User not found" });
+//         }
+
+//         if (userData.isLocked()) {
+//             await new LoginActivity({
+//                 email: userData.email,
+//                 role: userData.isAdmin ? "admin" : "user",
+//                 success: false,
+//                 message: "Account is locked due to too many failed login attempts. Please try again later.",
+//                 endpoint: req.originalUrl,
+//                 requestDetails: JSON.stringify(req.body)
+//             }).save();
+
+//             return res.status(403).json({
+//                 success: false,
+//                 message: "Account is locked due to too many failed login attempts. Please try again later."
+//             });
+//         }
+
+//         const isMatched = await bcrypt.compare(password, userData.password);
+//         if (!isMatched) {
+//             userData.failedLoginAttempts += 1;
+
+//             if (userData.failedLoginAttempts >= 5) {  
+//                 userData.lockUntil = Date.now() + (1 * 60 * 1000);  // Lock the account for 1 minutes
+//                 userData.failedLoginAttempts = 0; 
+//             }
+
+//             await userData.save();
+
+//             await new LoginActivity({
+//                 email: userData.email,
+//                 role: userData.isAdmin ? "admin" : "user",
+//                 success: false,
+//                 message: "Incorrect password.",
+//                 endpoint: req.originalUrl,
+//                 requestDetails: JSON.stringify(req.body)
+//             }).save();
+
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Incorrect password. If you fail to login multiple times, your account will be locked."
+//             });
+//         }
+
+//         // Reset failed login attempts and lockUntil if login is successful
+//         userData.failedLoginAttempts = 0;
+//         userData.lockUntil = null;
+//         await userData.save();
+
+//         const payload = {
+//             id: userData.id,
+//             firstName: userData.firstName,
+//             lastName: userData.lastName,
+//             email: userData.email,
+//             image: userData.image,
+//             isAdmin: userData.isAdmin
+//         };
+//         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "6hr" });
+
+//         // Log the successful login activity
+//         await new LoginActivity({
+//             email: userData.email,
+//             role: userData.isAdmin ? "admin" : "user",
+//             success: true,
+//             message: "Login successful",
+//             endpoint: req.originalUrl,
+//             requestDetails: JSON.stringify(req.body)
+//         }).save();
+
+//         return res.status(200).json({
+//             success: true,
+//             token: token,
+//             userData,
+//             message: "Login successfully"
+//         });
+
+//     } catch (error) {
+//         console.error(`Error while Login ${error}`);
+//         return res.status(500).send("Internal Server Error");
+//     }
+// };
 
 
 const getProfile = async (req, res) => {
