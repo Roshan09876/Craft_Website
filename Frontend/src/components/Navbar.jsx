@@ -1,11 +1,6 @@
 import React, { useContext, useState } from "react";
-import EmailIcon from "@mui/icons-material/Email";
-import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import logo from "../assets/logo.png";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import YouTubeIcon from "@mui/icons-material/YouTube";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
@@ -20,28 +15,11 @@ const Navbar = () => {
   const handleLogOut = async () => {
     localStorage.clear();
     window.location.reload();
-    navigate("/")
+    navigate("/login")
   }
 
   return (
     <div className="bg-primary w-full mb-4">
-      <div className="flex items-center justify-between">
-        <div className="text-white px-5 py-2 flex gap-5">
-          <div className="sm:text-xs md:text-base">
-            <LocalPhoneIcon />
-            <span className="ml-1">1234567890</span>
-          </div>
-          <div className="gap-2">
-            <EmailIcon />
-            <span className="ml-1">crafts@gmail.com</span>
-          </div>
-        </div>
-        <div className="text-white px-5 hidden md:block">
-          <FacebookIcon className="mr-3" />
-          <InstagramIcon />
-          <YouTubeIcon className="ml-3" />
-        </div>
-      </div>
       <nav className="shadow-md bg-white">
         <div className="flex justify-between items-center px-5">
           <div className="flex items-center sm:px-5">
@@ -52,7 +30,7 @@ const Navbar = () => {
               <img src={logo} className="h-[80px]" alt=" Logo" />
             </a>
             <h1 className="uppercase font-bold text-primary sm:text-xl md:text-1xl lg:text-2xl ml-4">
-              HandMade Crafts
+             E-Commerce Site
             </h1>
           </div>
           <div className="hidden lg:flex md:flex sm:flex sm:text-xs md:text-sm lg:text-base">

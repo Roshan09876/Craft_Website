@@ -13,7 +13,7 @@ const Footer = () => {
                     <div className='flex items-center'>
                         <img src={logo} alt="Uranus Tech Nepal" className='h-16 w-16 mr-4' />
                         <h1 className='font-bold uppercase text-secondary text-4xl'>
-                            HandMade Crafts Nepal
+                            E-Commerce Site
                         </h1>
                     </div>
                     <div className='flex space-x-4 text-white'>
@@ -28,17 +28,16 @@ const Footer = () => {
                         <h2 className='font-bold text-secondary mb-2'>Services</h2>
                         <ul className='space-y-1 font-light text-base'>
                             <li>24Hr Customer Service</li>
-                            <li>Handmade Products</li>
-                            <li>Good Response</li>
-                            <li>Bulk SMS</li>
+                            <li>Online Products</li>
+                            <li>Site</li>
                         </ul>
                     </div>
                     <div>
                         <h2 className='font-bold text-secondary mb-2'>Contact Us</h2>
                         <ul className='space-y-1 font-light text-base'>
-                            <li>Email: craft@uranustech.com</li>
-                            <li>Phone: +977-123456789</li>
-                            <li>Address: Kathmandu, Nepal</li>
+                            <li>Email: sonim@gmail.com</li>
+                            <li>Phone: +977-00000000</li>
+                            <li>Address: Kathmandu</li>
                         </ul>
                     </div>
                     <div className="mt-10 lg:mt-0">
@@ -71,7 +70,7 @@ const Footer = () => {
                 </div>
                 <hr className='my-10 border-secondary' />
                 <div className='text-center text-white'>
-                    <p>© 2024 HomeMade Craft Nepal, All rights reserved.</p>
+                    <p>© 2024 E-Commerce Site, All rights reserved.</p>
                 </div>
             </div>
         </div>

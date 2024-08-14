@@ -25,7 +25,7 @@ function App() {
         <ProductProvider>
           <BrowserRouter>
             <Navbar />
-            <Toaster position="top-center" reverseOrder={false} />
+            <Toaster position="top-right" reverseOrder={false} />
             <Routes>
               <Route path="/" element={<Homepage />} />
               <Route path="/register" element={<Register />} />

@@ -141,9 +141,61 @@ const allUser = async(req, res) => {
     }
 }
 
+const updateProfile = async (req, res) => {
+    const userId = req.params.id;
+    const { firstName, lastName, email, password } = req.body;
+    const image = req.file; // Assuming image is sent as a file
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        if (firstName) user.firstName = firstName;
+        if (lastName) user.lastName = lastName;
+        if (email) {
+            if (!email) {
+                return res.status(400).send('Please enter a valid email address');
+            }
+            user.email = email;
+        }
+
+        if (password) {
+            const passwordError = password;
+            if (passwordError) {
+                return res.status(400).send(passwordError);
+            }
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        if (image) {
+            const uploadedImage = await cloudinary.uploader.upload(image.path, {
+                folder: "user",
+                crop: "scale"
+            });
+            user.image = uploadedImage.secure_url;
+        }
+
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user
+        });
+
+    } catch (error) {
+        console.error(`Error while updating profile: ${error}`);
+        return res.status(500).send("Internal Server Error");
+    }
+};
+
 module.exports = {
     register,
     login,
     getProfile,
-    allUser
+    allUser,
+    updateProfile
 }

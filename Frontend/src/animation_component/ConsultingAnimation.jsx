@@ -14,7 +14,7 @@ const ConcultingAnimation = () => {
     };
 
     return (
-        <div className="rounded-xl hidden md:block w-full max-w-[100px] md:max-w-[200px] sm:max-w-[150px] xs:max-w-[100px] mx-auto">
+        <div className="rounded-xl hidden md:block w-full max-w-[100px] md:max-w-[400px] sm:max-w-[150px] xs:max-w-[100px] mx-auto">
             <Lottie options={defaultOptions} height="100%" width="100%" />
         </div>
     );

@@ -5,5 +5,6 @@ router.post("/register", userController.register);
 router.post("/login", userController.login);
 router.get("/profile/:id", userController.getProfile);
 router.get("/allusers", userController.allUser);
+router.put("/update/:id", userController.updateProfile);
 
 module.exports = router

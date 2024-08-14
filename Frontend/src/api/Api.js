@@ -48,4 +48,9 @@ export const addToCartApi = (userId, productId, quantity) =>
 //-------------------------  Get Cart By User ID -------------------------
 export const getCartApi = (userId) => Api.get(`/cart/getcart/${userId}`, getAuthHeaders());
 
+// Delete item from cart
+export const deleteCartItemApi = (userId, productId) => Api.delete(`/cart/delete/`, {
+    data: { userId, productId }, ...getAuthHeaders()
+});
 
+export const updateProfileApi = (id, formData) => Api.put(`/user/update/${id}`, formData, getAuthHeaders());

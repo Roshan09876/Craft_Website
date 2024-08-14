@@ -11,7 +11,7 @@ module.exports = {
     },
     extend: {
       colors: {
-        primary: "black",
+        primary: "teal",
         secondary: "white",
       },
       backgroundImage: {
